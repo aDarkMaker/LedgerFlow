@@ -1,0 +1,44 @@
+{
+  "name": "ledgerflow",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.18.1",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "start": "pnpm --filter @ledgerflow/mobile start",
+    "android": "pnpm --filter @ledgerflow/mobile android",
+    "build:android": "pnpm --filter @ledgerflow/mobile build:android",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "spell": "cspell --no-progress --no-summary",
+    "deps:check": "depcruise apps packages tooling --config .dependency-cruiser.cjs",
+    "icons": "node tooling/icons/build-icons.mjs",
+    "migrations": "node tooling/migrations/build-migrations.mjs",
+    "assets": "node tooling/assets/generate-placeholders.mjs",
+    "doctor": "pnpm --filter @ledgerflow/mobile exec expo-doctor",
+    "verify": "pnpm lint && pnpm typecheck && pnpm test && pnpm format:check && pnpm spell && pnpm deps:check",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "21.2.4",
+    "@commitlint/config-conventional": "21.2.4",
+    "@eslint/js": "9.39.5",
+    "@iconify-json/lucide": "1.2.146",
+    "@ledgerflow/config": "workspace:*",
+    "@types/node": "26.6.5",
+    "cspell": "10.4.0",
+    "dependency-cruiser": "18.6.0",
+    "eslint": "9.39.5",
+    "husky": "9.1.7",
+    "lint-staged": "17.6.0",
+    "prettier": "3.9.10",
+    "turbo": "2.11.9",
+    "typescript": "6.0.3"
+  }
+}

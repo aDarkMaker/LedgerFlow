@@ -20,7 +20,7 @@ function lint(files) {
 
   return [...groups].map(
     ([directory, staged]) =>
-      `pnpm --dir ${quote(directory)} exec eslint --fix --max-warnings=0 ${staged.join(' ')}`,
+      `pnpm --dir ${quote(directory)} exec eslint --fix --max-warnings=0 --no-warn-ignored ${staged.join(' ')}`,
   );
 }
 

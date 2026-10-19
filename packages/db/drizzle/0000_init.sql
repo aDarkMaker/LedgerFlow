@@ -1,0 +1,61 @@
+CREATE TABLE `categories` (
+	`id` text PRIMARY KEY NOT NULL,
+	`name` text NOT NULL,
+	`emoji` text NOT NULL,
+	`color` text NOT NULL,
+	`kind` text NOT NULL,
+	`sort` integer DEFAULT 0 NOT NULL,
+	`archived_at` text,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`deleted_at` text
+);
+--> statement-breakpoint
+CREATE INDEX `categories_kind_sort_idx` ON `categories` (`kind`,`sort`);--> statement-breakpoint
+CREATE TABLE `entries` (
+	`id` text PRIMARY KEY NOT NULL,
+	`amount_cents` integer NOT NULL,
+	`kind` text NOT NULL,
+	`category_id` text NOT NULL,
+	`note` text DEFAULT '' NOT NULL,
+	`occurred_on` text NOT NULL,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`deleted_at` text,
+	FOREIGN KEY (`category_id`) REFERENCES `categories`(`id`) ON UPDATE no action ON DELETE restrict
+);
+--> statement-breakpoint
+CREATE INDEX `entries_occurred_on_idx` ON `entries` (`occurred_on`);--> statement-breakpoint
+CREATE INDEX `entries_category_idx` ON `entries` (`category_id`);--> statement-breakpoint
+CREATE TABLE `budgets` (
+	`id` text PRIMARY KEY NOT NULL,
+	`period` text NOT NULL,
+	`amount_cents` integer NOT NULL,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`deleted_at` text
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `budgets_period_idx` ON `budgets` (`period`);--> statement-breakpoint
+CREATE TABLE `profiles` (
+	`id` text PRIMARY KEY DEFAULT 'me' NOT NULL,
+	`currency` text DEFAULT 'CNY' NOT NULL,
+	`user_id` text,
+	`email` text,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`updated_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL,
+	`deleted_at` text
+);
+--> statement-breakpoint
+CREATE TABLE `outbox` (
+	`id` text PRIMARY KEY NOT NULL,
+	`entity` text NOT NULL,
+	`entity_id` text NOT NULL,
+	`operation` text NOT NULL,
+	`payload` text NOT NULL,
+	`attempts` integer DEFAULT 0 NOT NULL,
+	`last_error` text,
+	`created_at` text DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')) NOT NULL
+);
+--> statement-breakpoint
+CREATE INDEX `outbox_created_at_idx` ON `outbox` (`created_at`);

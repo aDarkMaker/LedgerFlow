@@ -1,0 +1,29 @@
+{
+  "sets": {
+    "lucide": [
+      "arrow-down-left",
+      "arrow-up-right",
+      "calendar",
+      "chart-column",
+      "check",
+      "chevron-left",
+      "chevron-right",
+      "cloud-off",
+      "cloud-upload",
+      "download",
+      "flame",
+      "notebook-pen",
+      "plus",
+      "receipt",
+      "settings",
+      "sliders-horizontal",
+      "sparkles",
+      "tag",
+      "target",
+      "trash-2",
+      "user",
+      "wallet",
+      "x"
+    ]
+  }
+}

@@ -13,6 +13,7 @@ import {
   type CategoryTotal,
   type Entry,
   type NewEntryInput,
+  type Profile,
   type StreakSummary,
 } from '@ledgerflow/core';
 import {
@@ -20,12 +21,15 @@ import {
   countPendingChanges,
   enqueueChange,
   getBudget,
+  getProfile,
   insertEntry,
   listCategories,
   listEntriesForMonth,
   pendingChanges,
   softDeleteEntry,
+  toProfile,
   upsertBudget,
+  upsertProfile,
   type EntryRow,
 } from '@ledgerflow/db';
 import {
@@ -38,12 +42,17 @@ import {
 import { getDatabase } from '@/lib/database';
 import { createId, nowIso } from '@/lib/id';
 
+type ProfilePatch = Partial<
+  Pick<Profile, 'displayName' | 'email' | 'avatarFileName' | 'wallpaperFileName'>
+>;
+
 type LedgerState = {
   readonly ready: boolean;
   readonly selectedDate: string;
   readonly period: string;
   readonly entries: readonly Entry[];
   readonly categories: readonly Category[];
+  readonly profile: Profile;
   readonly budgetCents: number;
   readonly pendingCount: number;
   readonly error: string | null;
@@ -53,9 +62,22 @@ type LedgerState = {
   addEntry: (input: NewEntryInput) => Promise<void>;
   removeEntry: (id: string) => Promise<void>;
   saveBudget: (amountCents: number) => Promise<void>;
+  updateProfile: (patch: ProfilePatch) => Promise<void>;
   refreshPending: () => Promise<void>;
   flushOutbox: () => Promise<void>;
 };
+
+const EMPTY_PROFILE: Profile = {
+  currency: 'CNY',
+  monthBudgetCents: 0,
+  email: null,
+  displayName: null,
+  avatarFileName: null,
+  wallpaperFileName: null,
+};
+
+/** Coalesces concurrent callers so reconnects cannot stack sync engines. */
+let flushing: Promise<void> | null = null;
 
 export const useLedgerStore = create<LedgerState>((set, get) => ({
   ready: false,
@@ -63,6 +85,7 @@ export const useLedgerStore = create<LedgerState>((set, get) => ({
   period: monthKey(todayIso()),
   entries: [],
   categories: [],
+  profile: EMPTY_PROFILE,
   budgetCents: 0,
   pendingCount: 0,
   error: null,
@@ -70,10 +93,11 @@ export const useLedgerStore = create<LedgerState>((set, get) => ({
   async bootstrap() {
     const { db } = getDatabase();
     const period = monthKey(todayIso());
-    const [categoryRows, entryRows, budgetRow] = await Promise.all([
+    const [categoryRows, entryRows, budgetRow, profileRow] = await Promise.all([
       listCategories(db),
       listEntriesForMonth(db, period),
       getBudget(db, period),
+      getProfile(db),
     ]);
     await get().refreshPending();
     set({
@@ -81,6 +105,7 @@ export const useLedgerStore = create<LedgerState>((set, get) => ({
       period,
       categories: categoryRows.map(toCategoryEntity),
       entries: entryRows.map(toEntryEntity),
+      profile: profileRow === null ? EMPTY_PROFILE : toProfile(profileRow),
       budgetCents: budgetRow?.amountCents ?? 0,
     });
   },
@@ -181,6 +206,13 @@ export const useLedgerStore = create<LedgerState>((set, get) => ({
     await get().refreshPending();
   },
 
+  // Identity stays device-local: the row id 'me' never matches a remote uuid.
+  async updateProfile(patch) {
+    const { db } = getDatabase();
+    await upsertProfile(db, patch, nowIso());
+    set((state) => ({ profile: { ...state.profile, ...patch } }));
+  },
+
   async refreshPending() {
     const { db } = getDatabase();
     const pendingCount = await countPendingChanges(db);
@@ -191,33 +223,46 @@ export const useLedgerStore = create<LedgerState>((set, get) => ({
     if (!isSupabaseConfigured) {
       return;
     }
-    const { db } = getDatabase();
-    const { data } = await supabase.auth.getSession();
-    const userId = data.session?.user.id ?? null;
-    if (userId === null) {
-      return;
+    if (flushing !== null) {
+      return flushing;
     }
-
-    const engine = createSyncEngine({
-      outbox: {
-        pending: async (limit) => pendingChanges(db, limit),
-        ack: async (ids) => acknowledgeChanges(db, ids),
-        fail: (_id, message) => {
-          set({ error: message });
-          return Promise.resolve();
-        },
-      },
-      remote: createRemoteGateway({ client: supabase, userId: () => userId }),
-    });
-
+    flushing = runFlush();
     try {
-      await engine.run();
-      await get().refreshPending();
-    } catch (error) {
-      set({ error: error instanceof Error ? error.message : 'Sync failed' });
+      await flushing;
+    } finally {
+      flushing = null;
     }
   },
 }));
+
+async function runFlush(): Promise<void> {
+  const store = useLedgerStore.getState();
+  const { db } = getDatabase();
+  const { data } = await supabase.auth.getSession();
+  const userId = data.session?.user.id ?? null;
+  if (userId === null) {
+    return;
+  }
+
+  const engine = createSyncEngine({
+    outbox: {
+      pending: async (limit) => pendingChanges(db, limit),
+      ack: async (ids) => acknowledgeChanges(db, ids),
+      fail: (_id, message) => {
+        useLedgerStore.setState({ error: message });
+        return Promise.resolve();
+      },
+    },
+    remote: createRemoteGateway({ client: supabase, userId: () => userId }),
+  });
+
+  try {
+    await engine.run();
+    await store.refreshPending();
+  } catch (error) {
+    useLedgerStore.setState({ error: error instanceof Error ? error.message : 'Sync failed' });
+  }
+}
 
 export type LedgerView = {
   readonly dayEntries: readonly Entry[];

@@ -1,3 +1,3 @@
-import { reactConfig } from '@ledgerflow/config/eslint';
+import { reactConfig, workspaceDir } from '@ledgerflow/config/eslint';
 
-export default reactConfig({ rootDir: import.meta.dirname });
+export default reactConfig({ rootDir: workspaceDir(import.meta.url) });

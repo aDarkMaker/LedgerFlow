@@ -1,4 +1,4 @@
-import { baseConfig } from '@ledgerflow/config/eslint';
+import { baseConfig, workspaceDir } from '@ledgerflow/config/eslint';
 
 /**
  * Root config covers repository tooling only; each workspace resolves its own
@@ -6,5 +6,5 @@ import { baseConfig } from '@ledgerflow/config/eslint';
  */
 export default [
   { ignores: ['apps/**', 'packages/**', 'supabase/**'] },
-  ...baseConfig({ rootDir: import.meta.dirname, typeChecked: false }),
+  ...baseConfig({ rootDir: workspaceDir(import.meta.url), typeChecked: false }),
 ];

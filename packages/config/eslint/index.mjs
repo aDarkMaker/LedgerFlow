@@ -1,3 +1,6 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import js from '@eslint/js';
 import expo from 'eslint-config-expo/flat.js';
 import importPlugin from 'eslint-plugin-import';
@@ -84,6 +87,15 @@ const TS_FILES = ['**/*.ts', '**/*.tsx', '**/*.mts', '**/*.cts'];
 const SCRIPT_FILES = ['**/*.js', '**/*.jsx', '**/*.mjs', '**/*.cjs'];
 
 /**
+ * Absolute directory of a config module. `import.meta.dirname` is unavailable on
+ * older Node builds the editor may host ESLint in, and an undefined value makes
+ * typescript-eslint fall back to its stack-based guess.
+ */
+export function workspaceDir(moduleUrl) {
+  return path.dirname(fileURLToPath(moduleUrl));
+}
+
+/**
  * The IDE launches ESLint from the monorepo root, so type-aware parsing must be
  * pinned to the workspace that owns the linted files; otherwise typescript-eslint
  * aborts with "multiple candidate TSConfigRootDirs".
@@ -94,7 +106,7 @@ function typedConfig(rootDir) {
     languageOptions: {
       parserOptions: {
         projectService: true,
-        tsconfigRootDir: rootDir,
+        tsconfigRootDir: path.resolve(rootDir ?? process.cwd()),
       },
     },
   };
@@ -118,11 +130,23 @@ function scriptConfig() {
 
 /** Shared preset for every workspace. */
 export function baseConfig({ rootDir = process.cwd(), typeChecked = true } = {}) {
+  const workspaceRoot = path.resolve(rootDir ?? process.cwd());
+
   return tseslint.config(
     { ignores: IGNORES },
     js.configs.recommended,
     ...(typeChecked ? tseslint.configs.recommendedTypeChecked : tseslint.configs.recommended),
-    ...(typeChecked ? [typedConfig(rootDir)] : []),
+    // Always pin tsconfigRootDir: the IDE loads every workspace config into one
+    // process, so inference throws once multiple candidates are registered.
+    {
+      files: TS_FILES,
+      languageOptions: {
+        parserOptions: {
+          projectService: typeChecked,
+          tsconfigRootDir: workspaceRoot,
+        },
+      },
+    },
     {
       plugins: { ledgerflow: cjk, import: importPlugin },
       rules: {
@@ -138,19 +162,21 @@ export function baseConfig({ rootDir = process.cwd(), typeChecked = true } = {})
 
 /** Expo + React preset for app and UI packages. */
 export function reactConfig({ rootDir = process.cwd() } = {}) {
+  const workspaceRoot = path.resolve(rootDir);
+
   return tseslint.config(
     { ignores: IGNORES },
     js.configs.recommended,
     ...tseslint.configs.recommendedTypeChecked,
     ...expo,
-    typedConfig(rootDir),
+    typedConfig(workspaceRoot),
     {
       plugins: { ledgerflow: cjk },
       languageOptions: {
         globals: { ...globals.browser, ...globals.node },
         parserOptions: {
           projectService: true,
-          tsconfigRootDir: rootDir,
+          tsconfigRootDir: workspaceRoot,
           ecmaFeatures: { jsx: true },
         },
       },

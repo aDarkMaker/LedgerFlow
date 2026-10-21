@@ -3,7 +3,7 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "rootDir": ".",
-    "types": ["react-native", "expo"],
+    "types": ["expo"],
     "paths": {
       "@/*": ["./src/*"]
     }

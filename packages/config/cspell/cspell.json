@@ -79,7 +79,9 @@
     "normalises",
     "formatter",
     "parameterised",
-    "colour"
+    "colour",
+    "credentialless",
+    "ellipsize"
   ],
   "ignorePaths": [
     "node_modules/**",

@@ -1,3 +1,3 @@
-import { baseConfig } from './eslint/index.mjs';
+import { baseConfig, workspaceDir } from './eslint/index.mjs';
 
-export default baseConfig({ rootDir: import.meta.dirname, typeChecked: false });
+export default baseConfig({ rootDir: workspaceDir(import.meta.url), typeChecked: false });

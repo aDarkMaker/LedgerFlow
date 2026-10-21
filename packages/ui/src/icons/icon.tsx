@@ -1,3 +1,4 @@
+import { Platform, type ColorValue } from 'react-native';
 import { Circle, Ellipse, Line, Path, Polygon, Polyline, Rect, Svg } from 'react-native-svg';
 
 import { palette } from '../tokens';
@@ -5,7 +6,6 @@ import { palette } from '../tokens';
 import { lucideIcons, type IconName } from './lucide.generated';
 
 import type { IconShape } from './types';
-import type { ColorValue } from 'react-native';
 
 type Props = {
   name: IconName;
@@ -26,7 +26,12 @@ export function Icon({ name, size = 22, color = palette.ink, strokeWidth = 2 }: 
   };
 
   return (
-    <Svg width={size} height={size} viewBox={`0 0 ${icon.width} ${icon.height}`} accessible={false}>
+    <Svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${icon.width} ${icon.height}`}
+      {...(Platform.OS === 'web' ? {} : { accessible: false })}
+    >
       {icon.shapes.map((shape, index) => renderShape(shape, index, stroke))}
     </Svg>
   );

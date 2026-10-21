@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { describeMoney, formatMoney, type Money } from '@ledgerflow/core';
+import { describeMoney, formatMoney, formatMoneyCompact, type Money } from '@ledgerflow/core';
 
 import { fonts, fontSize, palette } from '../tokens';
 
@@ -9,6 +9,8 @@ type Props = {
   size?: 'hero' | 'display' | 'h1' | 'body';
   tone?: 'ink' | 'coral' | 'teal' | 'muted';
   showSymbol?: boolean;
+  /** Shrinks the type instead of wrapping once the amount gets long. */
+  fit?: boolean;
 };
 
 const SIZES = {
@@ -25,18 +27,36 @@ const TONES = {
   muted: palette.inkMuted,
 } as const;
 
+const COMFORTABLE = 9;
+const COMPACT_AFTER = 12;
+
 /** Tabular numerals keep the layout stable while the amount animates. */
-export function AmountText({ value, size = 'h1', tone = 'ink', showSymbol = true }: Props) {
+export function AmountText({
+  value,
+  size = 'h1',
+  tone = 'ink',
+  showSymbol = true,
+  fit = true,
+}: Props) {
+  const full = formatMoney(value, { withSymbol: showSymbol });
+  const text =
+    fit && full.length > COMPACT_AFTER
+      ? formatMoneyCompact(value, { withSymbol: showSymbol })
+      : full;
+  const base = SIZES[size];
+  const overflow = fit ? Math.max(0, text.length - COMFORTABLE) : 0;
+  const scaled = Math.max(base * 0.55, base - overflow * (base * 0.085));
+
   return (
     <View accessible accessibilityLabel={describeMoney(value)}>
       <Text
-        style={[
-          styles.text,
-          { fontSize: SIZES[size], color: TONES[tone], lineHeight: SIZES[size] * 1.15 },
-        ]}
+        style={[styles.text, { fontSize: scaled, color: TONES[tone], lineHeight: scaled * 1.18 }]}
+        numberOfLines={1}
+        adjustsFontSizeToFit={false}
         allowFontScaling={false}
+        ellipsizeMode="tail"
       >
-        {formatMoney(value, { withSymbol: showSymbol })}
+        {text}
       </Text>
     </View>
   );

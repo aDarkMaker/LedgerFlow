@@ -1,18 +1,19 @@
 import { StyleSheet, Text, View } from 'react-native';
 
+import { Icon, type IconName } from '../icons';
 import { fonts, fontSize, palette, spacing } from '../tokens';
 
 type Props = {
-  emoji: string;
+  icon: IconName;
   title: string;
   hint: string;
 };
 
-export function EmptyState({ emoji, title, hint }: Props) {
+export function EmptyState({ icon, title, hint }: Props) {
   return (
     <View style={styles.wrapper}>
-      <View style={styles.emojiBadge}>
-        <Text style={styles.emoji}>{emoji}</Text>
+      <View style={styles.badge}>
+        <Icon name={icon} size={34} color={palette.ink} />
       </View>
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.hint}>{hint}</Text>
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxl,
     paddingHorizontal: spacing.xl,
   },
-  emojiBadge: {
+  badge: {
     width: 76,
     height: 76,
     alignItems: 'center',
@@ -36,9 +37,6 @@ const styles = StyleSheet.create({
     borderColor: palette.ink,
     borderWidth: 2,
     borderRadius: 22,
-  },
-  emoji: {
-    fontSize: 34,
   },
   title: {
     fontFamily: fonts.heading,

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import * as Haptics from 'expo-haptics';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -6,15 +6,14 @@ import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
-  withSpring,
+  withTiming,
   type SharedValue,
 } from 'react-native-reanimated';
 
 import { Icon, type IconName } from '../icons';
-import { border, motion, palette, radius, shadow } from '../tokens';
+import { palette } from '../tokens';
 
 export type FanAction = {
-  readonly key: string;
   readonly label: string;
   readonly icon: IconName;
   readonly accent: string;
@@ -22,160 +21,165 @@ export type FanAction = {
 };
 
 type Props = {
-  actions: readonly [FanAction, FanAction, FanAction];
-  triggerIcon?: IconName;
+  actions: readonly [FanAction, FanAction];
 };
 
-const TRIGGER_SIZE = 60;
-const ACTION_SIZE = 52;
-const OFFSET = TRIGGER_SIZE * 0.95;
+/** Reference geometry: 12rem box, 3.2rem buttons, translate -170% / 70%. */
+const BUTTON = 51.2;
+const BOX_WIDTH = 192;
+const BOX_HEIGHT = 80;
+const GLYPH = 24;
+const FAN_MS = 300;
 
-const COLLAPSED_ROTATION = [90, -115, -45] as const;
-const EXPANDED_ROTATION = [-90, 0, 90] as const;
-const EXPANDED_OFFSETS = [-OFFSET, 0, OFFSET] as const;
+const LEFT_SHIFT = -BUTTON * 1.2;
+const RIGHT_SHIFT = BUTTON * 1.2;
 
-/**
- * Collapsed actions hide behind the trigger with the original CSS rotations.
- * Opening fans them out, mirroring the hover interaction of the source component.
- */
-export function FabFan({ actions, triggerIcon = 'sparkles' }: Props) {
+const COLLAPSED = [90, -115] as const;
+const EXPANDED = [-90, 90] as const;
+
+export function FabFan({ actions }: Props) {
   const [open, setOpen] = useState(false);
   const progress = useSharedValue(0);
 
-  function expand(next: boolean) {
-    setOpen(next);
-    progress.value = withSpring(next ? 1 : 0, motion.fan);
-  }
+  useEffect(() => {
+    progress.set(withTiming(open ? 1 : 0, { duration: FAN_MS }));
+  }, [open, progress]);
 
   function toggle() {
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    expand(!open);
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setOpen((current) => !current);
+  }
+
+  function run(action: FanAction | undefined) {
+    if (!open) {
+      setOpen(true);
+      return;
+    }
+    void Haptics.selectionAsync();
+    setOpen(false);
+    action?.onPress();
   }
 
   return (
-    <View style={styles.stage} pointerEvents="box-none">
-      {actions.map((action, index) => (
-        <FanActionButton
-          key={action.key}
-          action={action}
-          index={index}
-          progress={progress}
-          onPicked={() => expand(false)}
-        />
-      ))}
-      <TriggerButton icon={triggerIcon} open={open} progress={progress} onPress={toggle} />
+    <View style={styles.box}>
+      <FanButton
+        action={actions[0]}
+        index={0}
+        shift={LEFT_SHIFT}
+        progress={progress}
+        open={open}
+        onPress={() => run(actions[0])}
+      />
+      <FanButton
+        action={actions[1]}
+        index={1}
+        shift={RIGHT_SHIFT}
+        progress={progress}
+        open={open}
+        onPress={() => run(actions[1])}
+      />
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel={open ? 'Close quick actions' : 'Open quick actions'}
+        accessibilityState={{ expanded: open }}
+        onPress={toggle}
+        style={[styles.slot, styles.trigger]}
+      >
+        <TriggerGlyph progress={progress} />
+      </Pressable>
     </View>
   );
 }
 
-type ActionProps = {
-  action: FanAction;
-  index: number;
-  progress: SharedValue<number>;
-  onPicked: () => void;
-};
-
-function FanActionButton({ action, index, progress, onPicked }: ActionProps) {
-  const collapsedRotation = COLLAPSED_ROTATION[index] ?? 90;
-  const expandedRotation = EXPANDED_ROTATION[index] ?? 0;
-  const expandedOffset = EXPANDED_OFFSETS[index] ?? 0;
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(progress.value, [0, 0.4], [0, 1]),
-    transform: [
-      { translateX: interpolate(progress.value, [0, 1], [0, expandedOffset]) },
-      {
-        rotate: `${interpolate(progress.value, [0, 1], [collapsedRotation, expandedRotation])}deg`,
-      },
-      { scale: interpolate(progress.value, [0, 1], [0.6, 1]) },
-    ],
+function TriggerGlyph({ progress }: { progress: SharedValue<number> }) {
+  const style = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${interpolate(progress.value, [0, 1], [0, 45])}deg` }],
   }));
 
   return (
-    <Animated.View style={[styles.actionSlot, animatedStyle]} pointerEvents="box-none">
+    <Animated.View style={style}>
+      <Icon name="plus" size={GLYPH} color="#FFFFFF" strokeWidth={2.8} />
+    </Animated.View>
+  );
+}
+
+type ButtonProps = {
+  action: FanAction | undefined;
+  index: number;
+  shift: number;
+  progress: SharedValue<number>;
+  open: boolean;
+  onPress: () => void;
+};
+
+function FanButton({ action, index, shift, progress, open, onPress }: ButtonProps) {
+  const collapsed = COLLAPSED[index] ?? 0;
+  const expanded = EXPANDED[index] ?? 0;
+
+  const frameStyle = useAnimatedStyle(() => {
+    const value = progress.value;
+    return {
+      opacity: interpolate(value, [0, 1], [0.85, 1]),
+      transform: [
+        { translateX: shift * value },
+        { rotate: `${interpolate(value, [0, 1], [collapsed, expanded])}deg` },
+      ],
+    };
+  });
+  const glyphStyle = useAnimatedStyle(() => {
+    const value = progress.value;
+    return {
+      transform: [{ rotate: `${-interpolate(value, [0, 1], [collapsed, expanded])}deg` }],
+    };
+  });
+
+  return (
+    <Animated.View style={[styles.slot, { zIndex: 30 + index * 10 }, frameStyle]}>
       <Pressable
         accessibilityRole="button"
-        accessibilityLabel={action.label}
-        onPress={() => {
-          void Haptics.selectionAsync();
-          action.onPress();
-          onPicked();
-        }}
-        style={({ pressed }) => [
-          styles.action,
-          {
-            backgroundColor: action.accent,
-            boxShadow: pressed ? shadow.pressed : shadow.card,
-            transform: [{ translateY: pressed ? 2 : 0 }, { scale: pressed ? 0.94 : 1 }],
-          },
-        ]}
+        accessibilityLabel={action?.label ?? 'Action'}
+        accessibilityState={{ expanded: open }}
+        onPress={onPress}
+        style={[styles.button, { backgroundColor: action?.accent ?? palette.coral }]}
       >
-        <Icon name={action.icon} size={22} color={palette.ink} strokeWidth={2.4} />
+        <Animated.View style={glyphStyle}>
+          <Icon name={action?.icon ?? 'plus'} size={GLYPH} color="#FFFFFF" strokeWidth={2.4} />
+        </Animated.View>
       </Pressable>
     </Animated.View>
   );
 }
 
-type TriggerProps = {
-  icon: IconName;
-  open: boolean;
-  progress: SharedValue<number>;
-  onPress: () => void;
-};
-
-function TriggerButton({ icon, open, progress, onPress }: TriggerProps) {
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${interpolate(progress.value, [0, 1], [0, 45])}deg` },
-      { scale: interpolate(progress.value, [0, 1], [1, 1.05]) },
-    ],
-  }));
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={open ? 'Close quick actions' : 'Open quick actions'}
-      accessibilityState={{ expanded: open }}
-      onPress={onPress}
-      style={({ pressed }) => [
-        styles.trigger,
-        { boxShadow: pressed ? shadow.pressed : shadow.lifted },
-      ]}
-    >
-      <Animated.View style={animatedStyle}>
-        <Icon name={icon} size={26} color={palette.canvas} strokeWidth={2.4} />
-      </Animated.View>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
-  stage: {
-    width: OFFSET * 2 + ACTION_SIZE,
-    height: TRIGGER_SIZE,
+  box: {
+    width: BOX_WIDTH,
+    height: BOX_HEIGHT,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionSlot: {
+  slot: {
     position: 'absolute',
+    width: BUTTON,
+    height: BUTTON,
   },
-  action: {
-    width: ACTION_SIZE,
-    height: ACTION_SIZE,
+  button: {
+    width: BUTTON,
+    height: BUTTON,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: border.thick,
+    borderWidth: 3,
     borderColor: palette.ink,
-    borderRadius: radius.button,
+    borderRadius: 5,
+    boxShadow: 'inset 0 0 4px rgba(0, 0, 0, 0.4)',
   },
   trigger: {
-    width: TRIGGER_SIZE,
-    height: TRIGGER_SIZE,
+    zIndex: 50,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: palette.ink,
-    borderWidth: border.thick,
+    backgroundColor: palette.teal,
+    borderWidth: 3,
     borderColor: palette.ink,
-    borderRadius: radius.button,
+    borderRadius: 5,
+    boxShadow: 'inset 0 0 4px rgba(0, 0, 0, 0.4)',
   },
 });

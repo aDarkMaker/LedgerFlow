@@ -1,23 +1,24 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
+import { Icon, type IconName } from '../icons';
 import { border, fonts, fontSize, palette, radius, shadow, spacing } from '../tokens';
 
 type Props = {
   label: string;
-  emoji?: string;
+  icon?: IconName;
   selected?: boolean;
   accent?: string;
   onPress?: () => void;
 };
 
-export function Chip({ label, emoji, selected = false, accent = palette.coral, onPress }: Props) {
+export function Chip({ label, icon, selected = false, accent = palette.coral, onPress }: Props) {
   const background = selected ? accent : palette.surface;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityState={{ selected }}
-      accessibilityLabel={emoji === undefined ? label : `${emoji} ${label}`}
+      accessibilityLabel={label}
       onPress={onPress}
       style={({ pressed }) => [
         styles.base,
@@ -28,7 +29,7 @@ export function Chip({ label, emoji, selected = false, accent = palette.coral, o
         },
       ]}
     >
-      {emoji === undefined ? null : <Text style={styles.emoji}>{emoji}</Text>}
+      {icon === undefined ? null : <Icon name={icon} size={15} color={palette.ink} />}
       <Text style={[styles.label, selected && styles.labelSelected]} numberOfLines={1}>
         {label}
       </Text>
@@ -46,9 +47,6 @@ const styles = StyleSheet.create({
     borderWidth: border.thin,
     borderColor: palette.ink,
     borderRadius: radius.chip,
-  },
-  emoji: {
-    fontSize: 15,
   },
   label: {
     fontFamily: fonts.bodySemiBold,

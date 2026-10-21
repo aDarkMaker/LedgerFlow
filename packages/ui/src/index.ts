@@ -4,6 +4,7 @@ export type { ButtonSize, ButtonTone } from './components/button';
 export { Card } from './components/card';
 export { Chip } from './components/chip';
 export { EmptyState } from './components/empty-state';
+export { EdgeFade } from './components/edge-fade';
 export { FabFan } from './components/fab-fan';
 export type { FanAction } from './components/fab-fan';
 export { SyncBadge } from './components/sync-badge';

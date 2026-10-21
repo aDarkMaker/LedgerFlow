@@ -2,164 +2,42 @@
 import type { IconShapes } from './types';
 
 export const lucideIcons = {
-  'arrow-down-left': { width: 24, height: 24, shapes: [{ tag: 'path', d: 'M17 7L7 17m10 0H7V7' }] },
-  'arrow-up-right': { width: 24, height: 24, shapes: [{ tag: 'path', d: 'M7 7h10v10M7 17L17 7' }] },
-  calendar: {
-    width: 24,
-    height: 24,
-    shapes: [
-      { tag: 'path', d: 'M8 2v3m8-3v3' },
-      { tag: 'rect', x: 3, y: 3, width: 18, height: 18, rx: 2 },
-      { tag: 'path', d: 'M3 9h18' },
-    ],
-  },
-  'chart-column': {
-    width: 24,
-    height: 24,
-    shapes: [{ tag: 'path', d: 'M3 3v16a2 2 0 0 0 2 2h16m-3-4V9m-5 8V5M8 17v-3' }],
-  },
-  check: { width: 24, height: 24, shapes: [{ tag: 'path', d: 'M20 6L9 17l-5-5' }] },
-  'chevron-left': { width: 24, height: 24, shapes: [{ tag: 'path', d: 'm15 18l-6-6l6-6' }] },
-  'chevron-right': { width: 24, height: 24, shapes: [{ tag: 'path', d: 'm9 18l6-6l-6-6' }] },
-  'cloud-off': {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M10.94 5.274A7 7 0 0 1 15.71 10h1.79a4.5 4.5 0 0 1 4.222 6.057m-2.926 2.753A4.5 4.5 0 0 1 17.5 19H9A7 7 0 0 1 5.79 5.78M2 2l20 20',
-      },
-    ],
-  },
-  'cloud-upload': {
-    width: 24,
-    height: 24,
-    shapes: [
-      { tag: 'path', d: 'M12 13v8m-8-6.101A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242' },
-      { tag: 'path', d: 'm8 17l4-4l4 4' },
-    ],
-  },
-  download: {
-    width: 24,
-    height: 24,
-    shapes: [
-      { tag: 'path', d: 'M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4' },
-      { tag: 'path', d: 'm7 10l5 5l5-5' },
-    ],
-  },
-  flame: {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0a5 5 0 0 1 1-3a1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4',
-      },
-    ],
-  },
-  'notebook-pen': {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4M2 6h4m-4 4h4m-4 4h4m-4 4h4',
-      },
-      {
-        tag: 'path',
-        d: 'M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z',
-      },
-    ],
-  },
-  plus: { width: 24, height: 24, shapes: [{ tag: 'path', d: 'M5 12h14m-7-7v14' }] },
-  receipt: {
-    width: 24,
-    height: 24,
-    shapes: [
-      { tag: 'path', d: 'M12 17V7m4 1h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8' },
-      {
-        tag: 'path',
-        d: 'M4 3a1 1 0 0 1 1-1a1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1a1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2a1 1 0 0 1-1-1z',
-      },
-    ],
-  },
-  settings: {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M9.671 4.136a2.34 2.34 0 0 1 4.659 0a2.34 2.34 0 0 0 3.319 1.915a2.34 2.34 0 0 1 2.33 4.033a2.34 2.34 0 0 0 0 3.831a2.34 2.34 0 0 1-2.33 4.033a2.34 2.34 0 0 0-3.319 1.915a2.34 2.34 0 0 1-4.659 0a2.34 2.34 0 0 0-3.32-1.915a2.34 2.34 0 0 1-2.33-4.033a2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915',
-      },
-      { tag: 'circle', cx: 12, cy: 12, r: 3 },
-    ],
-  },
-  'sliders-horizontal': {
-    width: 24,
-    height: 24,
-    shapes: [{ tag: 'path', d: 'M10 5H3m9 14H3M14 3v4m2 10v4m5-9h-9m9 7h-5m5-14h-7m-6 5v4m0-2H3' }],
-  },
-  sparkles: {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4',
-      },
-      { tag: 'circle', cx: 4, cy: 20, r: 2 },
-    ],
-  },
-  tag: {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z',
-      },
-      { tag: 'circle', cx: 7.5, cy: 7.5, r: 0.5 },
-    ],
-  },
-  target: {
-    width: 24,
-    height: 24,
-    shapes: [
-      { tag: 'circle', cx: 12, cy: 12, r: 10 },
-      { tag: 'circle', cx: 12, cy: 12, r: 6 },
-      { tag: 'circle', cx: 12, cy: 12, r: 2 },
-    ],
-  },
-  'trash-2': {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M10 11v6m4-6v6m5-11v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2',
-      },
-    ],
-  },
-  user: {
-    width: 24,
-    height: 24,
-    shapes: [
-      { tag: 'path', d: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' },
-      { tag: 'circle', cx: 12, cy: 7, r: 4 },
-    ],
-  },
-  wallet: {
-    width: 24,
-    height: 24,
-    shapes: [
-      {
-        tag: 'path',
-        d: 'M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1',
-      },
-      { tag: 'path', d: 'M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4' },
-    ],
-  },
-  x: { width: 24, height: 24, shapes: [{ tag: 'path', d: 'M18 6L6 18M6 6l12 12' }] },
+  'arrow-down-left': { width: 24, height: 24, shapes: [{"tag":"path","d":"M17 7L7 17m10 0H7V7"}] },
+  'arrow-up-right': { width: 24, height: 24, shapes: [{"tag":"path","d":"M7 7h10v10M7 17L17 7"}] },
+  'briefcase': { width: 24, height: 24, shapes: [{"tag":"path","d":"M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"},{"tag":"rect","x":2,"y":6,"width":20,"height":14,"rx":2}] },
+  'bus': { width: 24, height: 24, shapes: [{"tag":"path","d":"M8 6v6m7-6v6M2 12h19.6M18 18h3s.5-1.7.8-2.8c.1-.4.2-.8.2-1.2s-.1-.8-.2-1.2l-1.4-5C20.1 6.8 19.1 6 18 6H4a2 2 0 0 0-2 2v10h3"},{"tag":"circle","cx":7,"cy":18,"r":2},{"tag":"path","d":"M9 18h5"},{"tag":"circle","cx":16,"cy":18,"r":2}] },
+  'calendar': { width: 24, height: 24, shapes: [{"tag":"path","d":"M8 2v3m8-3v3"},{"tag":"rect","x":3,"y":3,"width":18,"height":18,"rx":2},{"tag":"path","d":"M3 9h18"}] },
+  'chart-column': { width: 24, height: 24, shapes: [{"tag":"path","d":"M3 3v16a2 2 0 0 0 2 2h16m-3-4V9m-5 8V5M8 17v-3"}] },
+  'chart-pie': { width: 24, height: 24, shapes: [{"tag":"path","d":"M21 12c.552 0 1.005-.449.95-.998a10 10 0 0 0-8.953-8.951c-.55-.055-.998.398-.998.95v8a1 1 0 0 0 1 1z"},{"tag":"path","d":"M21.21 15.89A10 10 0 1 1 8 2.83"}] },
+  'check': { width: 24, height: 24, shapes: [{"tag":"path","d":"M20 6L9 17l-5-5"}] },
+  'chevron-left': { width: 24, height: 24, shapes: [{"tag":"path","d":"m15 18l-6-6l6-6"}] },
+  'chevron-right': { width: 24, height: 24, shapes: [{"tag":"path","d":"m9 18l6-6l-6-6"}] },
+  'cloud-off': { width: 24, height: 24, shapes: [{"tag":"path","d":"M10.94 5.274A7 7 0 0 1 15.71 10h1.79a4.5 4.5 0 0 1 4.222 6.057m-2.926 2.753A4.5 4.5 0 0 1 17.5 19H9A7 7 0 0 1 5.79 5.78M2 2l20 20"}] },
+  'cloud-upload': { width: 24, height: 24, shapes: [{"tag":"path","d":"M12 13v8m-8-6.101A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"},{"tag":"path","d":"m8 17l4-4l4 4"}] },
+  'coffee': { width: 24, height: 24, shapes: [{"tag":"path","d":"M10 2v2m4-2v2m2 4a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1M6 2v2"}] },
+  'delete': { width: 24, height: 24, shapes: [{"tag":"path","d":"M10 5a2 2 0 0 0-1.344.519l-6.328 5.74a1 1 0 0 0 0 1.481l6.328 5.741A2 2 0 0 0 10 19h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm2 4l6 6m0-6l-6 6"}] },
+  'download': { width: 24, height: 24, shapes: [{"tag":"path","d":"M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"},{"tag":"path","d":"m7 10l5 5l5-5"}] },
+  'file-check': { width: 24, height: 24, shapes: [{"tag":"path","d":"M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"},{"tag":"path","d":"M14 2v5a1 1 0 0 0 1 1h5M9 15l2 2l4-4"}] },
+  'flame': { width: 24, height: 24, shapes: [{"tag":"path","d":"M12 3q1 4 4 6.5t3 5.5a1 1 0 0 1-14 0a5 5 0 0 1 1-3a1 1 0 0 0 5 0c0-2-1.5-3-1.5-5q0-2 2.5-4"}] },
+  'gamepad-2': { width: 24, height: 24, shapes: [{"tag":"path","d":"M6 11h4M8 9v4m7-1h.01M18 10h.01m-.69-5H6.68a4 4 0 0 0-3.978 3.59l-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258q-.01-.075-.017-.151A4 4 0 0 0 17.32 5"}] },
+  'gift': { width: 24, height: 24, shapes: [{"tag":"path","d":"M12 7v14m8-10v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8m3.5-4a1 1 0 0 1 0-5A4.8 8 0 0 1 12 7a4.8 8 0 0 1 4.5-5a1 1 0 0 1 0 5"},{"tag":"rect","x":3,"y":7,"width":18,"height":4,"rx":1}] },
+  'house': { width: 24, height: 24, shapes: [{"tag":"path","d":"M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"},{"tag":"path","d":"M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"}] },
+  'notebook-pen': { width: 24, height: 24, shapes: [{"tag":"path","d":"M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4M2 6h4m-4 4h4m-4 4h4m-4 4h4"},{"tag":"path","d":"M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"}] },
+  'piggy-bank': { width: 24, height: 24, shapes: [{"tag":"path","d":"M11 17h3v2a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-3a3.16 3.16 0 0 0 2-2h1a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1h-1a5 5 0 0 0-2-4V3a4 4 0 0 0-3.2 1.6l-.3.4H11a6 6 0 0 0-6 6v1a5 5 0 0 0 2 4v3a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1zm5-7h.01M2 8v1a2 2 0 0 0 2 2h1"}] },
+  'pill': { width: 24, height: 24, shapes: [{"tag":"path","d":"m10.5 20.5l10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7m-2-12l7 7"}] },
+  'plus': { width: 24, height: 24, shapes: [{"tag":"path","d":"M5 12h14m-7-7v14"}] },
+  'receipt': { width: 24, height: 24, shapes: [{"tag":"path","d":"M12 17V7m4 1h-6a2 2 0 0 0 0 4h4a2 2 0 0 1 0 4H8"},{"tag":"path","d":"M4 3a1 1 0 0 1 1-1a1.3 1.3 0 0 1 .7.2l.933.6a1.3 1.3 0 0 0 1.4 0l.934-.6a1.3 1.3 0 0 1 1.4 0l.933.6a1.3 1.3 0 0 0 1.4 0l.933-.6a1.3 1.3 0 0 1 1.4 0l.934.6a1.3 1.3 0 0 0 1.4 0l.933-.6A1.3 1.3 0 0 1 19 2a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1a1.3 1.3 0 0 1-.7-.2l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.934.6a1.3 1.3 0 0 1-1.4 0l-.933-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-1.4 0l-.934-.6a1.3 1.3 0 0 0-1.4 0l-.933.6a1.3 1.3 0 0 1-.7.2a1 1 0 0 1-1-1z"}] },
+  'settings': { width: 24, height: 24, shapes: [{"tag":"path","d":"M9.671 4.136a2.34 2.34 0 0 1 4.659 0a2.34 2.34 0 0 0 3.319 1.915a2.34 2.34 0 0 1 2.33 4.033a2.34 2.34 0 0 0 0 3.831a2.34 2.34 0 0 1-2.33 4.033a2.34 2.34 0 0 0-3.319 1.915a2.34 2.34 0 0 1-4.659 0a2.34 2.34 0 0 0-3.32-1.915a2.34 2.34 0 0 1-2.33-4.033a2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"},{"tag":"circle","cx":12,"cy":12,"r":3}] },
+  'shopping-basket': { width: 24, height: 24, shapes: [{"tag":"path","d":"m15 11l-1 9m5-9l-4-7M2 11h20M3.5 11l1.6 7.4a2 2 0 0 0 2 1.6h9.8a2 2 0 0 0 2-1.6l1.7-7.4M4.5 15.5h15M5 11l4-7m0 7l1 9"}] },
+  'sliders-horizontal': { width: 24, height: 24, shapes: [{"tag":"path","d":"M10 5H3m9 14H3M14 3v4m2 10v4m5-9h-9m9 7h-5m5-14h-7m-6 5v4m0-2H3"}] },
+  'sparkles': { width: 24, height: 24, shapes: [{"tag":"path","d":"M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594zM20 2v4m2-2h-4"},{"tag":"circle","cx":4,"cy":20,"r":2}] },
+  'tag': { width: 24, height: 24, shapes: [{"tag":"path","d":"M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"},{"tag":"circle","cx":7.5,"cy":7.5,"r":0.5}] },
+  'target': { width: 24, height: 24, shapes: [{"tag":"circle","cx":12,"cy":12,"r":10},{"tag":"circle","cx":12,"cy":12,"r":6},{"tag":"circle","cx":12,"cy":12,"r":2}] },
+  'trash-2': { width: 24, height: 24, shapes: [{"tag":"path","d":"M10 11v6m4-6v6m5-11v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"}] },
+  'user': { width: 24, height: 24, shapes: [{"tag":"path","d":"M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"},{"tag":"circle","cx":12,"cy":7,"r":4}] },
+  'utensils': { width: 24, height: 24, shapes: [{"tag":"path","d":"M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20m14-7V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2zm0 0v7"}] },
+  'wallet': { width: 24, height: 24, shapes: [{"tag":"path","d":"M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"},{"tag":"path","d":"M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"}] },
+  'x': { width: 24, height: 24, shapes: [{"tag":"path","d":"M18 6L6 18M6 6l12 12"}] },
 } as const satisfies Record<string, IconShapes>;
 
 export type IconName = keyof typeof lucideIcons;

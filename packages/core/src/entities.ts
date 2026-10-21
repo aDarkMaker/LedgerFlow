@@ -36,6 +36,10 @@ export type Budget = {
 export type Profile = {
   readonly currency: 'CNY' | 'USD' | 'EUR' | 'JPY';
   readonly monthBudgetCents: number;
+  readonly email: string | null;
+  readonly displayName: string | null;
+  readonly avatarFileName: string | null;
+  readonly wallpaperFileName: string | null;
 };
 
 export type CategoryGroup = {

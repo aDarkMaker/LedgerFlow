@@ -19,7 +19,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     },
   },
   plugins: [
-    'expo-router',
+    ['expo-router', { asyncRoutes: { web: false, default: false } }],
     'expo-sqlite',
     'expo-secure-store',
     'expo-font',
@@ -33,6 +33,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
   ],
+  web: {
+    bundler: 'metro',
+    output: 'static',
+  },
   experiments: {
     typedRoutes: true,
     reactCompiler: true,

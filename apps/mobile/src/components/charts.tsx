@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, G, Path, Rect } from 'react-native-svg';
 
-import { formatMoney, money, type CategoryTotal, type DailyTotal } from '@ledgerflow/core';
+import { formatMoneyCompact, money, type CategoryTotal, type DailyTotal } from '@ledgerflow/core';
 import { fonts, fontSize, palette, spacing } from '@ledgerflow/ui';
 
 type BarChartProps = {
@@ -13,26 +13,34 @@ type BarChartProps = {
 /** Bars grow from the baseline; today keeps the ink accent so it reads first. */
 export function DailyBars({ data, today, height = 140 }: BarChartProps) {
   const max = Math.max(...data.map((item) => item.totalCents), 1);
-  const barWidth = 100 / Math.max(data.length, 1);
+  const count = Math.max(data.length, 1);
+  const gap = 0.28;
 
   return (
     <View>
-      <Svg width="100%" height={height} viewBox={`0 0 100 ${height}`}>
+      <Svg
+        width="100%"
+        height={height}
+        viewBox={`0 0 ${count} ${height}`}
+        preserveAspectRatio="none"
+      >
         {data.map((item, index) => {
-          const ratio = item.totalCents / max;
-          const barHeight = Math.max(item.totalCents === 0 ? 2 : 6, ratio * (height - 12));
-          const fill = item.date === today ? palette.ink : palette.coral;
+          const empty = item.totalCents === 0;
+          const h = empty
+            ? height * 0.02
+            : Math.max(height * 0.08, (item.totalCents / max) * (height - 16));
           return (
             <Rect
               key={item.date}
-              x={index * barWidth + barWidth * 0.18}
-              y={height - barHeight}
-              width={barWidth * 0.64}
-              height={barHeight}
-              rx={3}
-              fill={fill}
-              stroke={palette.ink}
-              strokeWidth={1}
+              x={index + gap / 2}
+              y={height - h}
+              width={1 - gap}
+              height={h}
+              rx={0.12}
+              fill={empty ? palette.hairline : item.date === today ? palette.ink : palette.coral}
+              stroke={empty ? 'none' : palette.ink}
+              strokeWidth={empty ? 0 : 1.5}
+              vectorEffect="non-scaling-stroke"
             />
           );
         })}
@@ -72,7 +80,7 @@ export function CategoryDonut({ slices, totalCents }: DonutProps) {
   return (
     <View style={styles.donutWrapper}>
       <Svg width={132} height={132} viewBox="0 0 110 110">
-        <G rotation={-90} originX={55} originY={55}>
+        <G transform="rotate(-90 55 55)">
           <Circle
             cx={55}
             cy={55}
@@ -98,8 +106,8 @@ export function CategoryDonut({ slices, totalCents }: DonutProps) {
       </Svg>
       <View style={styles.donutCenter}>
         <Text style={styles.donutLabel}>Total</Text>
-        <Text style={styles.donutValue}>
-          {formatMoney(money(totalCents), { withSymbol: false })}
+        <Text style={styles.donutValue} numberOfLines={1}>
+          {formatMoneyCompact(money(totalCents), { withSymbol: false })}
         </Text>
       </View>
     </View>

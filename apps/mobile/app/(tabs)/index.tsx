@@ -1,14 +1,31 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { router } from 'expo-router';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 
-import { describeMoney, formatMoney, money, monthKey, todayIso } from '@ledgerflow/core';
-import { AmountText, Card, FabFan, fonts, fontSize, palette, spacing } from '@ledgerflow/ui';
+import { describeMoney, formatMoneyCompact, money, monthKey, todayIso } from '@ledgerflow/core';
+import {
+  AmountText,
+  Card,
+  EdgeFade,
+  FabFan,
+  fonts,
+  fontSize,
+  palette,
+  spacing,
+} from '@ledgerflow/ui';
 import type { FanAction } from '@ledgerflow/ui';
 
+import { CategoryIcon } from '@/components/category-icon';
 import { EntryRow } from '@/components/entry-row';
 import { ScreenHeader } from '@/components/screen-header';
 import { selectLedgerView, useLedgerStore } from '@/state/ledger-store';
@@ -44,31 +61,33 @@ export default function TodayScreen() {
   const expense = money(view.dayExpenseCents);
   const allowance = money(view.budget.dailyAllowanceCents);
 
-  const actions: readonly [FanAction, FanAction, FanAction] = [
+  const actions: readonly [FanAction, FanAction] = [
     {
-      key: 'expense',
       label: 'Add expense',
-      icon: 'plus',
+      icon: 'receipt',
       accent: palette.coral,
       onPress: () => router.push({ pathname: '/entry/new', params: { kind: 'expense' } }),
     },
     {
-      key: 'income',
       label: 'Add income',
-      icon: 'arrow-down-left',
+      icon: 'wallet',
       accent: palette.gold,
       onPress: () => router.push({ pathname: '/entry/new', params: { kind: 'income' } }),
-    },
-    {
-      key: 'budget',
-      label: 'Set budget',
-      icon: 'target',
-      accent: palette.teal,
-      onPress: () => router.push('/budget'),
     },
   ];
 
   const isToday = selectedDate === todayIso();
+
+  const [chips, setChips] = useState({ atStart: true, atEnd: false });
+
+  function onChipsScroll(event: NativeSyntheticEvent<NativeScrollEvent>) {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const atStart = contentOffset.x <= 4;
+    const atEnd = contentOffset.x + layoutMeasurement.width >= contentSize.width - 4;
+    setChips((current) =>
+      current.atStart === atStart && current.atEnd === atEnd ? current : { atStart, atEnd },
+    );
+  }
 
   return (
     <View style={styles.root}>
@@ -94,8 +113,8 @@ export default function TodayScreen() {
             <Text style={styles.allowanceLabel}>
               {view.budget.budgetCents === 0 ? 'No budget yet' : 'Can still spend'}
             </Text>
-            <Text style={styles.allowanceValue}>
-              {view.budget.budgetCents === 0 ? 'Set one' : formatMoney(allowance)}
+            <Text style={styles.allowanceValue} numberOfLines={1}>
+              {view.budget.budgetCents === 0 ? 'Set one' : formatMoneyCompact(allowance)}
             </Text>
           </View>
         </Card>
@@ -109,8 +128,8 @@ export default function TodayScreen() {
                 <Text style={[styles.weekDay, active && styles.weekDayActive]}>
                   {weekdayLabel(date)}
                 </Text>
-                <Text style={[styles.weekAmount, active && styles.weekDayActive]}>
-                  {total === 0 ? '–' : Math.round(total / 100)}
+                <Text style={[styles.weekAmount, active && styles.weekDayActive]} numberOfLines={1}>
+                  {total === 0 ? '–' : formatMoneyCompact(money(total), { withSymbol: false })}
                 </Text>
               </View>
             );
@@ -126,25 +145,31 @@ export default function TodayScreen() {
             </Text>
           </Card>
         ) : (
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.chips}
-          >
-            {view.breakdown.slice(0, 6).map((item) => (
-              <Card key={item.categoryId} tone="surface" style={styles.chipCard} padded={false}>
-                <View style={[styles.chipEmoji, { backgroundColor: item.color }]}>
-                  <Text style={styles.chipEmojiText}>{item.emoji}</Text>
-                </View>
-                <Text style={styles.chipName} numberOfLines={1}>
-                  {item.name}
-                </Text>
-                <Text style={styles.chipAmount}>
-                  {formatMoney(money(item.totalCents), { withSymbol: true })}
-                </Text>
-              </Card>
-            ))}
-          </ScrollView>
+          <View style={styles.chipsWrap}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              onScroll={onChipsScroll}
+              scrollEventThrottle={16}
+              contentContainerStyle={styles.chips}
+            >
+              {view.breakdown.slice(0, 6).map((item) => (
+                <Card key={item.categoryId} tone="surface" style={styles.chipCard} padded={false}>
+                  <View style={[styles.chipSwatch, { backgroundColor: item.color }]}>
+                    <CategoryIcon id={item.categoryId} />
+                  </View>
+                  <Text style={styles.chipName} numberOfLines={1}>
+                    {item.name}
+                  </Text>
+                  <Text style={styles.chipAmount} numberOfLines={1}>
+                    {formatMoneyCompact(money(item.totalCents))}
+                  </Text>
+                </Card>
+              ))}
+            </ScrollView>
+            {chips.atStart ? null : <EdgeFade side="left" />}
+            {chips.atEnd ? null : <EdgeFade side="right" />}
+          </View>
         )}
 
         <View style={styles.timelineHeader}>
@@ -173,7 +198,7 @@ export default function TodayScreen() {
       </ScrollView>
 
       <View style={[styles.fabSlot, { bottom: insets.bottom + 24 }]} pointerEvents="box-none">
-        <FabFan actions={actions} triggerIcon={isToday ? 'notebook-pen' : 'calendar'} />
+        <FabFan actions={actions} />
       </View>
     </View>
   );
@@ -279,17 +304,21 @@ const styles = StyleSheet.create({
     fontSize: fontSize.small,
     color: palette.inkMuted,
   },
+  chipsWrap: {
+    marginHorizontal: -spacing.lg,
+  },
   chips: {
     gap: spacing.sm,
     paddingTop: spacing.md,
-    paddingRight: spacing.lg,
+    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.lg,
   },
   chipCard: {
     width: 108,
     gap: 6,
     padding: spacing.sm,
   },
-  chipEmoji: {
+  chipSwatch: {
     width: 32,
     height: 32,
     alignItems: 'center',
@@ -297,9 +326,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: palette.ink,
     borderRadius: 10,
-  },
-  chipEmojiText: {
-    fontSize: 15,
   },
   chipName: {
     fontFamily: fonts.bodySemiBold,

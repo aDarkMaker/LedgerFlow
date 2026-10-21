@@ -1,12 +1,11 @@
 import { useMemo } from 'react';
 
-import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 
-import { dailyTotals, formatMoney, lastNDates, money, monthBounds } from '@ledgerflow/core';
-import { AmountText, Button, Card, fonts, fontSize, palette, spacing } from '@ledgerflow/ui';
+import { dailyTotals, formatMoneyCompact, lastNDates, money, monthBounds } from '@ledgerflow/core';
+import { AmountText, Card, fonts, fontSize, palette, spacing } from '@ledgerflow/ui';
 
 import { CategoryDonut, DailyBars, StreakHeatmap } from '@/components/charts';
 import { ScreenHeader } from '@/components/screen-header';
@@ -58,9 +57,9 @@ export default function InsightsScreen() {
         <Card tone="muted" style={styles.totalCard}>
           <Text style={styles.totalLabel}>Spent this month</Text>
           <AmountText value={monthTotal} size="display" />
-          <Text style={styles.totalHint}>
-            Projected {formatMoney(money(view.budget.projectedCents))} · budget{' '}
-            {formatMoney(money(view.budget.budgetCents))}
+          <Text style={styles.totalHint} numberOfLines={2}>
+            Projected {formatMoneyCompact(money(view.budget.projectedCents))} · budget{' '}
+            {formatMoneyCompact(money(view.budget.budgetCents))}
           </Text>
         </Card>
 
@@ -98,21 +97,6 @@ export default function InsightsScreen() {
             <Text style={styles.streakHint}>Best run {view.streak.longest} days</Text>
           </View>
         </Card>
-
-        <View style={styles.actions}>
-          <Button
-            label="Set budget"
-            tone="teal"
-            onPress={() => router.push('/budget')}
-            style={styles.actionButton}
-          />
-          <Button
-            label="Design gallery"
-            tone="ghost"
-            onPress={() => router.push('/(dev)/gallery')}
-            style={styles.actionButton}
-          />
-        </View>
       </ScrollView>
     </View>
   );
@@ -211,13 +195,5 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     fontSize: fontSize.small,
     color: palette.inkMuted,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: spacing.sm,
-    marginTop: spacing.xl,
-  },
-  actionButton: {
-    flex: 1,
   },
 });

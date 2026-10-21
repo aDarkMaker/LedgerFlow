@@ -1,16 +1,23 @@
 import { Tabs } from 'expo-router';
 import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { fonts, fontSize, Icon, palette } from '@ledgerflow/ui';
 
 export default function TabsLayout() {
+  const insets = useSafeAreaInsets();
+
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
+        lazy: false,
+        animation: 'shift',
+        tabBarLabelPosition: 'below-icon',
         tabBarActiveTintColor: palette.ink,
         tabBarInactiveTintColor: palette.inkSoft,
-        tabBarStyle: styles.bar,
+        tabBarStyle: [styles.bar, { height: 76 + insets.bottom, paddingBottom: insets.bottom + 8 }],
+        tabBarItemStyle: styles.item,
         tabBarLabelStyle: styles.label,
       }}
     >
@@ -41,16 +48,18 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   bar: {
-    height: 68,
-    paddingTop: 8,
-    paddingBottom: 12,
+    paddingTop: 6,
     backgroundColor: palette.surface,
     borderTopWidth: 2,
     borderTopColor: palette.ink,
   },
+  item: {
+    justifyContent: 'center',
+  },
   label: {
     fontFamily: fonts.bodySemiBold,
     fontSize: fontSize.caption,
-    letterSpacing: 0.4,
+    lineHeight: 14,
+    marginTop: 2,
   },
 });

@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { formatMoney, money, type Category, type Entry } from '@ledgerflow/core';
 import { fonts, fontSize, palette, spacing } from '@ledgerflow/ui';
 
+import { CategoryIcon } from '@/components/category-icon';
+
 type Props = {
   entry: Entry;
   category: Category | undefined;
@@ -21,8 +23,8 @@ export function EntryRow({ entry, category, onLongPress }: Props) {
       onLongPress={() => onLongPress?.(entry)}
       style={({ pressed }) => [styles.row, pressed && styles.pressed]}
     >
-      <View style={[styles.emojiBadge, { backgroundColor: accent }]}>
-        <Text style={styles.emoji}>{category?.emoji ?? '🧾'}</Text>
+      <View style={[styles.swatch, { backgroundColor: accent }]}>
+        <CategoryIcon id={category?.id ?? ''} size={18} />
       </View>
       <View style={styles.copy}>
         <Text style={styles.title} numberOfLines={1}>
@@ -32,7 +34,7 @@ export function EntryRow({ entry, category, onLongPress }: Props) {
           {entry.note === '' ? entry.occurredOn : entry.note}
         </Text>
       </View>
-      <Text style={[styles.amount, entry.kind === 'income' && styles.income]}>
+      <Text style={[styles.amount, entry.kind === 'income' && styles.income]} numberOfLines={1}>
         {sign}
         {formatMoney(money(entry.amountCents), { withSymbol: false })}
       </Text>
@@ -52,7 +54,7 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.6,
   },
-  emojiBadge: {
+  swatch: {
     width: 40,
     height: 40,
     alignItems: 'center',
@@ -60,9 +62,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: palette.ink,
     borderRadius: 12,
-  },
-  emoji: {
-    fontSize: 18,
   },
   copy: {
     flex: 1,
@@ -83,6 +82,8 @@ const styles = StyleSheet.create({
     fontSize: fontSize.body,
     color: palette.ink,
     fontVariant: ['tabular-nums'],
+    flexShrink: 1,
+    textAlign: 'right',
   },
   income: {
     color: palette.teal,

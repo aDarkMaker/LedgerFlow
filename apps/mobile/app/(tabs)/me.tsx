@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 
-import { router } from 'expo-router';
 import { ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -8,6 +7,7 @@ import { csvFileName, entriesToCsv } from '@ledgerflow/core';
 import { signInWithOtp, verifyOtp } from '@ledgerflow/sync';
 import { Button, Card, fonts, fontSize, Icon, palette, spacing } from '@ledgerflow/ui';
 
+import { BudgetCard } from '@/components/budget-card';
 import { ScreenHeader } from '@/components/screen-header';
 import { shareCsv } from '@/lib/export';
 import { useLedgerStore } from '@/state/ledger-store';
@@ -113,10 +113,10 @@ export default function MeScreen() {
 
         <Card tone="surface" style={styles.card}>
           <View style={styles.cardHeader}>
-            <Icon name="sliders-horizontal" size={18} color={palette.ink} />
+            <Icon name="piggy-bank" size={18} color={palette.ink} />
             <Text style={styles.cardTitle}>Budget & data</Text>
           </View>
-          <Button label="Edit monthly budget" tone="gold" onPress={() => router.push('/budget')} />
+          <BudgetCard />
           <Button label="Export CSV" tone="ghost" onPress={() => void exportCsv()} />
         </Card>
 

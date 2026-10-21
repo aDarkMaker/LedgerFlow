@@ -51,9 +51,12 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="entry/new"
-            options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+            options={{
+              presentation: 'transparentModal',
+              animation: 'none',
+              contentStyle: { backgroundColor: 'transparent' },
+            }}
           />
-          <Stack.Screen name="(dev)/gallery" options={{ presentation: 'modal' }} />
         </Stack>
       </SafeAreaProvider>
     </GestureHandlerRootView>

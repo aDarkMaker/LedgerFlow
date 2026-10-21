@@ -2,6 +2,9 @@ import { useMemo, useState } from 'react';
 
 import { router } from 'expo-router';
 import {
+  Alert,
+  Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,7 +15,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShallow } from 'zustand/react/shallow';
 
-import { describeMoney, formatMoneyCompact, money, monthKey, todayIso } from '@ledgerflow/core';
+import { describeMoney, formatMoneyCompact, money, todayIso } from '@ledgerflow/core';
 import {
   AmountText,
   Card,
@@ -28,6 +31,7 @@ import type { FanAction } from '@ledgerflow/ui';
 import { CategoryIcon } from '@/components/category-icon';
 import { EntryRow } from '@/components/entry-row';
 import { ScreenHeader } from '@/components/screen-header';
+import { blurActiveElement } from '@/lib/focus';
 import { selectLedgerView, useLedgerStore } from '@/state/ledger-store';
 import { usePendingCount, useSyncStatus } from '@/state/sync';
 
@@ -40,14 +44,17 @@ export default function TodayScreen() {
   const categories = useLedgerStore((state) => state.categories);
   const selectedDate = useLedgerStore((state) => state.selectedDate);
   const removeEntry = useLedgerStore((state) => state.removeEntry);
+  const selectDate = useLedgerStore((state) => state.selectDate);
 
   const categoryLookup = useMemo(
     () => new Map(categories.map((category) => [category.id, category])),
     [categories],
   );
 
+  const week = useMemo(() => buildWeek(selectedDate), [selectedDate]);
+
   const weekTotals = useMemo(() => {
-    const dates = new Set(buildWeek(selectedDate));
+    const dates = new Set(week);
     const totals = new Map<string, number>();
     for (const entry of allEntries) {
       if (entry.kind !== 'expense' || entry.deletedAt !== null || !dates.has(entry.occurredOn)) {
@@ -56,7 +63,18 @@ export default function TodayScreen() {
       totals.set(entry.occurredOn, (totals.get(entry.occurredOn) ?? 0) + entry.amountCents);
     }
     return totals;
-  }, [allEntries, selectedDate]);
+  }, [allEntries, week]);
+
+  function confirmRemove(id: string) {
+    if (Platform.OS === 'web') {
+      void removeEntry(id);
+      return;
+    }
+    Alert.alert('Delete this entry?', 'It will be removed from your ledger.', [
+      { text: 'Keep', style: 'cancel' },
+      { text: 'Delete', style: 'destructive', onPress: () => void removeEntry(id) },
+    ]);
+  }
 
   const expense = money(view.dayExpenseCents);
   const allowance = money(view.budget.dailyAllowanceCents);
@@ -66,13 +84,19 @@ export default function TodayScreen() {
       label: 'Add expense',
       icon: 'receipt',
       accent: palette.coral,
-      onPress: () => router.push({ pathname: '/entry/new', params: { kind: 'expense' } }),
+      onPress: () => {
+        blurActiveElement();
+        router.push({ pathname: '/entry/new', params: { kind: 'expense' } });
+      },
     },
     {
       label: 'Add income',
       icon: 'wallet',
       accent: palette.gold,
-      onPress: () => router.push({ pathname: '/entry/new', params: { kind: 'income' } }),
+      onPress: () => {
+        blurActiveElement();
+        router.push({ pathname: '/entry/new', params: { kind: 'income' } });
+      },
     },
   ];
 
@@ -107,7 +131,7 @@ export default function TodayScreen() {
         />
 
         <Card tone="surface" style={styles.hero}>
-          <Text style={styles.heroLabel}>Spent today</Text>
+          <Text style={styles.heroLabel}>{isToday ? 'Spent today' : 'Spent that day'}</Text>
           <AmountText value={expense} size="hero" />
           <View style={styles.allowance}>
             <Text style={styles.allowanceLabel}>
@@ -120,18 +144,25 @@ export default function TodayScreen() {
         </Card>
 
         <View style={styles.week}>
-          {buildWeek(selectedDate).map((date) => {
+          {week.map((date) => {
             const total = weekTotals.get(date) ?? 0;
             const active = date === selectedDate;
             return (
-              <View key={date} style={[styles.weekCell, active && styles.weekCellActive]}>
+              <Pressable
+                key={date}
+                accessibilityRole="button"
+                accessibilityLabel={`${weekdayLabel(date)} ${total === 0 ? 'no spend' : formatMoneyCompact(money(total))}`}
+                accessibilityState={{ selected: active }}
+                onPress={() => void selectDate(date)}
+                style={[styles.weekCell, active && styles.weekCellActive]}
+              >
                 <Text style={[styles.weekDay, active && styles.weekDayActive]}>
                   {weekdayLabel(date)}
                 </Text>
                 <Text style={[styles.weekAmount, active && styles.weekDayActive]} numberOfLines={1}>
                   {total === 0 ? '–' : formatMoneyCompact(money(total), { withSymbol: false })}
                 </Text>
-              </View>
+              </Pressable>
             );
           })}
         </View>
@@ -188,9 +219,7 @@ export default function TodayScreen() {
                 key={entry.id}
                 entry={entry}
                 category={categoryLookup.get(entry.categoryId)}
-                onLongPress={() => {
-                  void removeEntry(entry.id);
-                }}
+                onLongPress={() => confirmRemove(entry.id)}
               />
             ))
           )}
@@ -222,12 +251,9 @@ function weekdayLabel(date: string): string {
   return ['S', 'M', 'T', 'W', 'T', 'F', 'S'][new Date(`${date}T00:00:00`).getDay()] ?? '?';
 }
 
-export const TODAY_PERIOD = monthKey(todayIso());
-
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.canvas,
   },
   content: {
     paddingHorizontal: spacing.lg,

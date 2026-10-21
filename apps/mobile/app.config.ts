@@ -7,6 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: 'LedgerFlow',
   slug: 'ledgerflow',
   version: APP_VERSION,
+  runtimeVersion: { policy: 'appVersion' },
   orientation: 'portrait',
   scheme: 'ledgerflow',
   userInterfaceStyle: 'light',
@@ -23,6 +24,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-sqlite',
     'expo-secure-store',
     'expo-font',
+    'expo-updates',
+    [
+      'expo-image-picker',
+      {
+        photosPermission: 'Allow LedgerFlow to pick a photo for your avatar and wallpaper.',
+      },
+    ],
     [
       'expo-splash-screen',
       {

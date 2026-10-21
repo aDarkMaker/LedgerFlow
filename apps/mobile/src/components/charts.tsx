@@ -15,6 +15,8 @@ export function DailyBars({ data, today, height = 140 }: BarChartProps) {
   const max = Math.max(...data.map((item) => item.totalCents), 1);
   const count = Math.max(data.length, 1);
   const gap = 0.28;
+  const todayIndex = data.findIndex((item) => item.date === today);
+  const parity = todayIndex >= 0 ? todayIndex % 2 : 0;
 
   return (
     <View>
@@ -46,9 +48,9 @@ export function DailyBars({ data, today, height = 140 }: BarChartProps) {
         })}
       </Svg>
       <View style={styles.axis}>
-        {data.map((item) => (
+        {data.map((item, index) => (
           <Text key={item.date} style={[styles.axisLabel, item.date === today && styles.axisToday]}>
-            {item.date.slice(8)}
+            {index % 2 === parity ? item.date.slice(8) : ''}
           </Text>
         ))}
       </View>

@@ -47,7 +47,7 @@ export default function InsightsScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ScreenHeader
-          eyebrow={`${period} · ${monthSpentBound.end.slice(8)} days`}
+          eyebrow={`${period} · day ${selectedDate.slice(8)} of ${monthSpentBound.end.slice(8)}`}
           title="Where it flows"
           streak={view.streak.current}
           offline={!online}
@@ -105,7 +105,6 @@ export default function InsightsScreen() {
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: palette.canvas,
   },
   content: {
     paddingHorizontal: spacing.lg,

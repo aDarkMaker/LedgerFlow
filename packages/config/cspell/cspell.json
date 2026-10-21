@@ -81,7 +81,8 @@
     "parameterised",
     "colour",
     "credentialless",
-    "ellipsize"
+    "ellipsize",
+    "autoincrement"
   ],
   "ignorePaths": [
     "node_modules/**",
@@ -91,6 +92,8 @@
     "**/android/**",
     "**/ios/**",
     "**/lucide.generated.ts",
+    "**/drizzle/**",
+    "packages/db/src/migrations.generated.ts",
     "assets/**",
     "coverage/**"
   ],

@@ -4,6 +4,7 @@ import {
   addMoney,
   describeMoney,
   formatMoney,
+  formatMoneyCompact,
   minorUnitFactor,
   money,
   parseAmount,
@@ -44,5 +45,12 @@ describe('money', () => {
   it('describes amounts for screen readers', () => {
     expect(describeMoney(money(3250))).toBe('32 yuan 5 tenths');
     expect(describeMoney(money(10000))).toBe('100 yuan');
+  });
+
+  it('compacts huge amounts so tight cards cannot overflow', () => {
+    expect(formatMoneyCompact(money(123456))).toBe('¥1,234.56');
+    expect(formatMoneyCompact(money(12_345_600))).toBe('¥123.5K');
+    expect(formatMoneyCompact(money(100_000_000_00))).toBe('¥100.0M');
+    expect(formatMoneyCompact(money(-7_500_000_00), { withSymbol: false })).toBe('-7.5M');
   });
 });

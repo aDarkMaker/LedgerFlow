@@ -83,13 +83,40 @@ export function formatMoney(
   if (!withSymbol) {
     return body;
   }
-  const symbols: Record<CurrencyCode, string> = {
-    CNY: '¥',
-    USD: '$',
-    EUR: '€',
-    JPY: '¥',
-  };
-  return `${symbols[value.currency]}${body}`;
+  return `${SYMBOLS[value.currency]}${body}`;
+}
+
+const COMPACT_STEPS = [
+  { from: 1_000_000_000, divisor: 1_000_000_000, suffix: 'B' },
+  { from: 1_000_000, divisor: 1_000_000, suffix: 'M' },
+  { from: 10_000, divisor: 1_000, suffix: 'K' },
+] as const;
+
+const SYMBOLS: Record<CurrencyCode, string> = {
+  CNY: '¥',
+  USD: '$',
+  EUR: '€',
+  JPY: '¥',
+};
+
+/**
+ * Short form for tight containers. Large values collapse to K/M/B so a card
+ * never grows past its fixed width.
+ */
+export function formatMoneyCompact(value: Money, options: { withSymbol?: boolean } = {}): string {
+  const { withSymbol = true } = options;
+  const factor = minorUnitFactor(value.currency);
+  const units = Math.abs(value.amountCents) / factor;
+  const sign = value.amountCents < 0 ? '-' : '';
+  const symbol = withSymbol ? SYMBOLS[value.currency] : '';
+  const step = COMPACT_STEPS.find((candidate) => units >= candidate.from);
+
+  if (step === undefined) {
+    return formatMoney(value, { withSymbol });
+  }
+
+  const scaled = units / step.divisor;
+  return `${sign}${symbol}${scaled.toFixed(1)}${step.suffix}`;
 }
 
 /** Screen readers should hear a spoken amount rather than raw symbols. */

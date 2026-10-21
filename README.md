@@ -66,8 +66,8 @@ online and authenticated. Deletes are tombstones, and conflicts resolve with las
 
 The UI is a printed sticker sheet: cream canvas, ink borders, hard offset shadows and a coral, gold
 and teal accent trio. Bricolage Grotesque carries headings and amounts, Inter handles body copy, and
-every number uses tabular figures so animated amounts never jitter. Open `/(dev)/gallery` in a
-development build to inspect tokens, primitives, charts and the icon set.
+every number uses tabular figures so animated amounts never jitter. Design tokens, primitives and the
+generated icon set live in `packages/ui`; the icon pipeline is driven by `pnpm icons`.
 
 ## Backend setup
 

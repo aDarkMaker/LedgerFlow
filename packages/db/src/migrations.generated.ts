@@ -2,17 +2,24 @@
 import type { MigrationBundle } from './migrations.types';
 
 const journal: MigrationBundle['journal'] = {
-  version: '7',
-  dialect: 'sqlite',
-  entries: [
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
     {
-      idx: 0,
-      version: '6',
-      when: 1792400000000,
-      tag: '0000_init',
-      breakpoints: true,
+      "idx": 0,
+      "version": "6",
+      "when": 1792400000000,
+      "tag": "0000_init",
+      "breakpoints": true
     },
-  ],
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1792580605096,
+      "tag": "0001_profile_identity",
+      "breakpoints": true
+    }
+  ]
 };
 
 const m0000 = `CREATE TABLE \`categories\` (
@@ -78,4 +85,12 @@ CREATE TABLE \`outbox\` (
 CREATE INDEX \`outbox_created_at_idx\` ON \`outbox\` (\`created_at\`);
 `;
 
-export const migrationBundle: MigrationBundle = { journal, migrations: { m0000 } };
+const m0001 = `ALTER TABLE \`profiles\` ADD \`display_name\` text;--> statement-breakpoint
+ALTER TABLE \`profiles\` ADD \`avatar_file_name\` text;--> statement-breakpoint
+ALTER TABLE \`profiles\` ADD \`wallpaper_file_name\` text;
+`;
+
+export const migrationBundle: MigrationBundle = {
+  journal,
+  migrations: { m0000, m0001 },
+};

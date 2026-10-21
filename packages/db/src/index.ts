@@ -1,6 +1,7 @@
 export * from './schema';
 export * from './client';
 export * from './mappers';
+export * from './migrate';
 export * from './migrations.types';
 export { migrationBundle } from './migrations.generated';
 export * from './repositories/categories';

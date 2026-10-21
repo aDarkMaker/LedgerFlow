@@ -33,5 +33,12 @@ export function toBudget(row: BudgetRow): Budget {
 }
 
 export function toProfile(row: ProfileRow): Profile {
-  return { currency: row.currency, monthBudgetCents: 0 };
+  return {
+    currency: row.currency,
+    monthBudgetCents: 0,
+    email: row.email,
+    displayName: row.displayName,
+    avatarFileName: row.avatarFileName,
+    wallpaperFileName: row.wallpaperFileName,
+  };
 }

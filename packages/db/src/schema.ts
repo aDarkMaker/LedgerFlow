@@ -63,6 +63,9 @@ export const profiles = sqliteTable('profiles', {
     .default('CNY'),
   userId: text('user_id'),
   email: text('email'),
+  displayName: text('display_name'),
+  avatarFileName: text('avatar_file_name'),
+  wallpaperFileName: text('wallpaper_file_name'),
   ...timestamps,
 });
 

@@ -29,16 +29,16 @@
     "@commitlint/cli": "21.2.4",
     "@commitlint/config-conventional": "21.2.4",
     "@eslint/js": "9.39.5",
-    "@iconify-json/lucide": "1.2.146",
+    "@iconify-json/lucide": "1.2.147",
     "@ledgerflow/config": "workspace:*",
     "@types/node": "26.6.5",
     "cspell": "10.4.0",
-    "dependency-cruiser": "18.6.0",
+    "dependency-cruiser": "18.7.0",
     "eslint": "9.39.5",
     "husky": "9.1.7",
     "lint-staged": "17.6.0",
     "prettier": "3.9.10",
-    "turbo": "2.11.9",
+    "turbo": "2.11.10",
     "typescript": "6.0.3"
   }
 }
